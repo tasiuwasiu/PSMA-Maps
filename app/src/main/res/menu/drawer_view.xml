@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_first_road"
 
             android:title="1" />
         <item
@@ -17,4 +18,22 @@
             android:id="@+id/nav_manage"
             android:title="4" />
     </group>
+    <group>
+
+
+        <item
+            android:id = "@+id/nav_satellite"
+            android:icon = "@drawable/ic_satellite"
+            android:title="satelita"
+            app:actionLayout = "@layout/layout_switch"
+            />
+        <item
+            android:id = "@+id/nav_position"
+            android:icon = "@drawable/ic_satellite"
+            android:title="position"
+            app:actionLayout = "@layout/layout_switch"
+            />
+    </group>
+
+
 </menu>
