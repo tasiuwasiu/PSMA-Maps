@@ -1,8 +1,12 @@
 package lab.wasikrafal.lab7;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,10 +14,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,21 +25,32 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+
+import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback
 {
 
-    private GoogleMap mMap;
-    private DrawerLayout mDrawerLayout;
-    private NavigationView navigationView;
+    private GoogleMap map;
+    private DrawerLayout drawerLayout;
+    private Activity mapsActivity;
+    private SharedPreferences sharedPreferences;
+    SharedPreferences.Editor preferenceEditor;
+    SwitchCompat satelliteSwitch;
+    SwitchCompat positionSwitch;
+    private List<Polyline> currentRoad;
+    private List<Marker> currentMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        sharedPreferences = getSharedPreferences("lab.wasikrafal.lab7", Context.MODE_PRIVATE);
+        mapsActivity = this;
+        drawerLayout = findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
@@ -44,17 +59,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
 
-        initNavigationMenu();
-
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        initNavigationMenu();
     }
 
     private void initNavigationMenu()
     {
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -64,29 +78,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         if(id == R.id.nav_first_road)
                         {
-                            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                            showFirstRoad();
+                        }
+                        if(id == R.id.nav_second_road)
+                        {
+                            showSecondRoad();
+                        }
+                        if(id == R.id.nav_third_road)
+                        {
+                            showThirdRoad();
+                        }
+                        if(id == R.id.nav_fourth_road)
+                        {
+                            showFourthRoad();
                         }
 
-
-                        mDrawerLayout.closeDrawers();
+                        drawerLayout.closeDrawers();
                         return true;
                     }
                 });
 
         Menu navigationMenu = navigationView.getMenu();
         MenuItem satelliteItem = navigationMenu.findItem(R.id.nav_satellite);
-        SwitchCompat satelliteSwitch = (SwitchCompat) satelliteItem.getActionView().findViewById(R.id.nav_switch);
+        satelliteSwitch = (SwitchCompat) satelliteItem.getActionView().findViewById(R.id.nav_switch);
         satelliteSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b)
             {
-                Toast.makeText(MapsActivity.this, "is enabled frs: " + b , Toast.LENGTH_SHORT).show();
+                if(b)
+                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                else
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                preferenceEditor = sharedPreferences.edit();
+                preferenceEditor.putBoolean("satellite", b);
+                preferenceEditor.apply();
             }
         });
 
         MenuItem positionItem = navigationMenu.findItem(R.id.nav_position);
-        SwitchCompat positionSwitch = (SwitchCompat) positionItem.getActionView().findViewById(R.id.nav_switch);
+        positionSwitch = (SwitchCompat) positionItem.getActionView().findViewById(R.id.nav_switch);
         positionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
@@ -94,45 +125,63 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             {
                 try
                 {
-                    mMap.setMyLocationEnabled(b);
+                    map.setMyLocationEnabled(b);
                 }
                 catch (SecurityException e)
                 {
+                    int resCode=0;
+                    ActivityCompat.requestPermissions(mapsActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},resCode);
                     Toast.makeText(MapsActivity.this, "GPS error" , Toast.LENGTH_LONG).show();
                     compoundButton.setChecked(false);
                 }
-                //Toast.makeText(MapsActivity.this, "is enabled sec: " + b , Toast.LENGTH_SHORT).show();
+                preferenceEditor = sharedPreferences.edit();
+                preferenceEditor.putBoolean("position", positionSwitch.isChecked());
+                preferenceEditor.apply();
             }
         });
     }
 
+    private void load()
+    {
+        satelliteSwitch.setChecked(sharedPreferences.getBoolean("satellite", false));
+        positionSwitch.setChecked(sharedPreferences.getBoolean("position", false));
+    }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    private void showFirstRoad()
+    {
+        Toast.makeText(MapsActivity.this, "showingfirst" , Toast.LENGTH_LONG).show();
+    }
+
+    private void showSecondRoad()
+    {
+        Toast.makeText(MapsActivity.this, "showing second" , Toast.LENGTH_LONG).show();
+    }
+
+    private void showThirdRoad()
+    {
+        Toast.makeText(MapsActivity.this, "showing third" , Toast.LENGTH_LONG).show();
+    }
+
+    private void showFourthRoad()
+    {
+        Toast.makeText(MapsActivity.this, "showing fourth" , Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
+        map = googleMap;
+        load();
         LatLng wroclaw = new LatLng(51.0636, 17.0326);
-        //mMap.addMarker(new MarkerOptions().position(wroclaw).title("Marker in wroclaw"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(wroclaw, 11.0f));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(wroclaw));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(wroclaw, 11.0f));
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -141,8 +190,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onBackPressed()
     {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }

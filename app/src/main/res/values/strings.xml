@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Lab7</string>
     <string name="title_activity_maps">Map</string>
+    <string name="widok_z_satelity">Widok z satelity</string>
+    <string name="moja_pozycja">Moja pozycja</string>
+    <string name="pierwsza_trasa">Pierwsza trasa</string>
+    <string name="druga_trasa">Druga trasa</string>
+    <string name="trzecia_trasa">Trzecia trasa</string>
+    <string name="czwarta_trasa">Czwarta trasa</string>
 </resources>

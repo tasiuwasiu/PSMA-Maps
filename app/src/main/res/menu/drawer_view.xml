@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <group android:checkableBehavior="single">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/nav_road_group">
         <item
             android:id="@+id/nav_first_road"
-
-            android:title="1" />
+            android:icon="@drawable/ic_bike"
+            android:title="@string/pierwsza_trasa" />
         <item
-            android:id="@+id/nav_gallery"
-
-            android:title="2y" />
+            android:id="@+id/nav_second_road"
+            android:icon="@drawable/ic_bike"
+            android:title="@string/druga_trasa" />
         <item
-            android:id="@+id/nav_slideshow"
-
-            android:title="3" />
+            android:id="@+id/nav_third_road"
+            android:icon="@drawable/ic_walk"
+            android:title="@string/trzecia_trasa" />
         <item
-            android:id="@+id/nav_manage"
-            android:title="4" />
+            android:id="@+id/nav_fourth_road"
+            android:icon="@drawable/ic_walk"
+            android:title="@string/czwarta_trasa" />
     </group>
-    <group>
 
-
+    <group
+        android:id="@+id/nav_settings_group">
         <item
             android:id = "@+id/nav_satellite"
             android:icon = "@drawable/ic_satellite"
-            android:title="satelita"
+            android:title="@string/widok_z_satelity"
             app:actionLayout = "@layout/layout_switch"
             />
         <item
             android:id = "@+id/nav_position"
-            android:icon = "@drawable/ic_satellite"
-            android:title="position"
+            android:icon = "@drawable/ic_position"
+            android:title="@string/moja_pozycja"
             app:actionLayout = "@layout/layout_switch"
             />
     </group>
-
 
 </menu>
