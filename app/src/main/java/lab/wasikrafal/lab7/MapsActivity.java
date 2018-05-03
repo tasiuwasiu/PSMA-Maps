@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -27,10 +28,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener
 {
 
     private GoogleMap map;
@@ -40,8 +44,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     SharedPreferences.Editor preferenceEditor;
     SwitchCompat satelliteSwitch;
     SwitchCompat positionSwitch;
+    SwitchCompat markerSwitch;
     private List<Polyline> currentRoad;
     private List<Marker> currentMarkers;
+    private int[] urls;
+    private DownloadTask downloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,7 +70,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        initURLS();
+        currentMarkers = new ArrayList<>();
+        currentRoad = new ArrayList<>();
+
         initNavigationMenu();
+    }
+
+    private void initURLS()
+    {
+        urls= new int[4];
+        urls[0] = R.string.url_first;
+        urls[1] = R.string.url_second;
+        urls[2] = R.string.url_third;
+        urls[3] = R.string.url_fourth;
     }
 
     private void initNavigationMenu()
@@ -139,32 +159,143 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 preferenceEditor.apply();
             }
         });
+
+        MenuItem markerItem = navigationMenu.findItem(R.id.nav_markers);
+        markerSwitch = (SwitchCompat) markerItem.getActionView().findViewById(R.id.nav_switch);
+        markerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                toogleMarkers(b);
+                preferenceEditor = sharedPreferences.edit();
+                preferenceEditor.putBoolean("markers", b);
+                preferenceEditor.apply();
+            }
+        });
     }
 
     private void load()
     {
         satelliteSwitch.setChecked(sharedPreferences.getBoolean("satellite", false));
         positionSwitch.setChecked(sharedPreferences.getBoolean("position", false));
+        markerSwitch.setChecked(sharedPreferences.getBoolean("markers", true));
     }
 
     private void showFirstRoad()
     {
-        Toast.makeText(MapsActivity.this, "showingfirst" , Toast.LENGTH_LONG).show();
+        clearRoad();
+
+        downloader = new DownloadTask(new Response()
+        {
+            @Override
+            public void processReceiving(boolean isReceived, List<String> directions)
+            {
+                if(isReceived)
+                {
+                    for (String path:directions)
+                    {
+                        PolylineOptions polylineOptions = new PolylineOptions();
+                        polylineOptions.color(Color.BLUE);
+                        polylineOptions.width(10);
+                        polylineOptions.addAll(PolyUtil.decode(path));
+                        currentRoad.add(map.addPolyline(polylineOptions));
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        downloader.execute(getString(urls[0]));
     }
 
     private void showSecondRoad()
     {
-        Toast.makeText(MapsActivity.this, "showing second" , Toast.LENGTH_LONG).show();
+        clearRoad();
+
+        downloader = new DownloadTask(new Response()
+        {
+            @Override
+            public void processReceiving(boolean isReceived, List<String> directions)
+            {
+                if(isReceived)
+                {
+                    for (String path:directions)
+                    {
+                        PolylineOptions polylineOptions = new PolylineOptions();
+                        polylineOptions.color(Color.BLUE);
+                        polylineOptions.width(10);
+                        polylineOptions.addAll(PolyUtil.decode(path));
+                        currentRoad.add(map.addPolyline(polylineOptions));
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        downloader.execute(getString(urls[1]));
     }
 
     private void showThirdRoad()
     {
-        Toast.makeText(MapsActivity.this, "showing third" , Toast.LENGTH_LONG).show();
+        clearRoad();
+
+        downloader = new DownloadTask(new Response()
+        {
+            @Override
+            public void processReceiving(boolean isReceived, List<String> directions)
+            {
+                if(isReceived)
+                {
+                    for (String path:directions)
+                    {
+                        PolylineOptions polylineOptions = new PolylineOptions();
+                        polylineOptions.color(Color.BLUE);
+                        polylineOptions.width(10);
+                        polylineOptions.addAll(PolyUtil.decode(path));
+                        currentRoad.add(map.addPolyline(polylineOptions));
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        downloader.execute(getString(urls[2]));
     }
 
     private void showFourthRoad()
     {
-        Toast.makeText(MapsActivity.this, "showing fourth" , Toast.LENGTH_LONG).show();
+        clearRoad();
+
+        downloader = new DownloadTask(new Response()
+        {
+            @Override
+            public void processReceiving(boolean isReceived, List<String> directions)
+            {
+                if(isReceived)
+                {
+                    for (String path:directions)
+                    {
+                        PolylineOptions polylineOptions = new PolylineOptions();
+                        polylineOptions.color(Color.BLUE);
+                        polylineOptions.width(10);
+                        polylineOptions.addAll(PolyUtil.decode(path));
+                        currentRoad.add(map.addPolyline(polylineOptions));
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        downloader.execute(getString(urls[3]));
     }
 
     @Override
@@ -172,13 +303,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         map = googleMap;
         load();
-        LatLng wroclaw = new LatLng(51.0636, 17.0326);
+        LatLng wroclaw = new LatLng(51.107524, 17.038507);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(wroclaw, 11.0f));
 
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMarkerClick(Marker marker)
+    {
+        if(marker.isInfoWindowShown())
+            marker.hideInfoWindow();
+        else
+            marker.showInfoWindow();
+
+        return false;
+    }
+
+    private void toogleMarkers(boolean isVisible)
+    {
+        for (int i = 0; i < currentMarkers.size(); i++)
+            currentMarkers.get(i).setVisible(isVisible);
+    }
+
+    private void clearRoad()
+    {
+        for (Polyline poly:currentRoad)
+        {
+            poly.remove();
+        }
+        currentRoad.clear();
+    }
+
+    private void clearMarkers()
+    {
+        for (Marker marker:currentMarkers)
+        {
+            marker.remove();
+        }
+        currentRoad.clear();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         switch (item.getItemId()) {
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);

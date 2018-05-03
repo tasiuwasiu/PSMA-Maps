@@ -7,4 +7,10 @@
     <string name="druga_trasa">Druga trasa</string>
     <string name="trzecia_trasa">Trzecia trasa</string>
     <string name="czwarta_trasa">Czwarta trasa</string>
+    <string name="znaczniki">Pokaż znaczniki</string>
+    <string name="url_first" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=bicycling&amp;key=</string>
+    <string name="url_second" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=bicycling&amp;key=</string>
+    <string name="url_third" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=walking&amp;key=</string>
+    <string name="url_fourth" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=walking&amp;key=</string>
+
 </resources>
