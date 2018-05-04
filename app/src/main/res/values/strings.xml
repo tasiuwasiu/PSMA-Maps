@@ -8,9 +8,10 @@
     <string name="trzecia_trasa">Trzecia trasa</string>
     <string name="czwarta_trasa">Czwarta trasa</string>
     <string name="znaczniki">Pokaż znaczniki</string>
-    <string name="url_first" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=bicycling&amp;key=</string>
+    <string name="url_first" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=51.109317,17.054497&amp;destination=51.126064,16.990499&amp;waypoints=51.103010,17.071997|51.100528,17.120618|51.135069,17.047607&amp;mode=bicycling&amp;key=</string>
     <string name="url_second" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=bicycling&amp;key=</string>
     <string name="url_third" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=walking&amp;key=</string>
     <string name="url_fourth" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=walking&amp;key=</string>
+    <string name="show_route">Pokaż trasę</string>
 
 </resources>

@@ -41,14 +41,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout drawerLayout;
     private Activity mapsActivity;
     private SharedPreferences sharedPreferences;
-    SharedPreferences.Editor preferenceEditor;
-    SwitchCompat satelliteSwitch;
-    SwitchCompat positionSwitch;
-    SwitchCompat markerSwitch;
+    private SharedPreferences.Editor preferenceEditor;
+    private SwitchCompat satelliteSwitch;
+    private SwitchCompat positionSwitch;
+    private SwitchCompat markerSwitch;
+    private SwitchCompat roadSwitch;
     private List<Polyline> currentRoad;
     private List<Marker> currentMarkers;
     private int[] urls;
-    private DownloadTask downloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,7 +61,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
-        if(actionbar!=null) {
+        if(actionbar!=null)
+        {
             actionbar.setDisplayHomeAsUpEnabled(true);
             actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
@@ -97,21 +98,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         int id = menuItem.getItemId();
 
                         if(id == R.id.nav_first_road)
-                        {
-                            showFirstRoad();
-                        }
+                            showRoad(0);
                         if(id == R.id.nav_second_road)
-                        {
-                            showSecondRoad();
-                        }
+                            showRoad(1);
                         if(id == R.id.nav_third_road)
-                        {
-                            showThirdRoad();
-                        }
+                            showRoad(2);
                         if(id == R.id.nav_fourth_road)
-                        {
-                            showFourthRoad();
-                        }
+                            showRoad(3);
 
                         drawerLayout.closeDrawers();
                         return true;
@@ -173,6 +166,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 preferenceEditor.apply();
             }
         });
+
+        MenuItem roadItem = navigationMenu.findItem(R.id.nav_road);
+        roadSwitch = (SwitchCompat) roadItem.getActionView().findViewById(R.id.nav_switch);
+        roadSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                toogleRoad(b);
+                preferenceEditor = sharedPreferences.edit();
+                preferenceEditor.putBoolean("road", b);
+                preferenceEditor.apply();
+            }
+        });
+    }
+
+    private void initMarkers()
+    {
+
     }
 
     private void load()
@@ -180,13 +192,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         satelliteSwitch.setChecked(sharedPreferences.getBoolean("satellite", false));
         positionSwitch.setChecked(sharedPreferences.getBoolean("position", false));
         markerSwitch.setChecked(sharedPreferences.getBoolean("markers", true));
+        roadSwitch.setChecked(sharedPreferences.getBoolean("road", true));
     }
 
-    private void showFirstRoad()
+    private void showRoad(final int number)
     {
         clearRoad();
-
-        downloader = new DownloadTask(new Response()
+        clearMarkers();
+        DownloadTask downloader = new DownloadTask(new Response()
         {
             @Override
             public void processReceiving(boolean isReceived, List<String> directions)
@@ -200,102 +213,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         polylineOptions.width(10);
                         polylineOptions.addAll(PolyUtil.decode(path));
                         currentRoad.add(map.addPolyline(polylineOptions));
+                        showMarkers(number);
                     }
                 }
                 else
                 {
-                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapsActivity.this, "ERROR" , Toast.LENGTH_LONG).show();
                 }
             }
-        });
-        downloader.execute(getString(urls[0]));
+        }, getString(urls[number]), getString(R.string.google_maps_key));
+        downloader.execute();
     }
 
-    private void showSecondRoad()
+    private void showMarkers(int number)
     {
-        clearRoad();
 
-        downloader = new DownloadTask(new Response()
-        {
-            @Override
-            public void processReceiving(boolean isReceived, List<String> directions)
-            {
-                if(isReceived)
-                {
-                    for (String path:directions)
-                    {
-                        PolylineOptions polylineOptions = new PolylineOptions();
-                        polylineOptions.color(Color.BLUE);
-                        polylineOptions.width(10);
-                        polylineOptions.addAll(PolyUtil.decode(path));
-                        currentRoad.add(map.addPolyline(polylineOptions));
-                    }
-                }
-                else
-                {
-                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        downloader.execute(getString(urls[1]));
-    }
-
-    private void showThirdRoad()
-    {
-        clearRoad();
-
-        downloader = new DownloadTask(new Response()
-        {
-            @Override
-            public void processReceiving(boolean isReceived, List<String> directions)
-            {
-                if(isReceived)
-                {
-                    for (String path:directions)
-                    {
-                        PolylineOptions polylineOptions = new PolylineOptions();
-                        polylineOptions.color(Color.BLUE);
-                        polylineOptions.width(10);
-                        polylineOptions.addAll(PolyUtil.decode(path));
-                        currentRoad.add(map.addPolyline(polylineOptions));
-                    }
-                }
-                else
-                {
-                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        downloader.execute(getString(urls[2]));
-    }
-
-    private void showFourthRoad()
-    {
-        clearRoad();
-
-        downloader = new DownloadTask(new Response()
-        {
-            @Override
-            public void processReceiving(boolean isReceived, List<String> directions)
-            {
-                if(isReceived)
-                {
-                    for (String path:directions)
-                    {
-                        PolylineOptions polylineOptions = new PolylineOptions();
-                        polylineOptions.color(Color.BLUE);
-                        polylineOptions.width(10);
-                        polylineOptions.addAll(PolyUtil.decode(path));
-                        currentRoad.add(map.addPolyline(polylineOptions));
-                    }
-                }
-                else
-                {
-                    Toast.makeText(MapsActivity.this, "error" , Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        downloader.execute(getString(urls[3]));
     }
 
     @Override
@@ -305,7 +237,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         load();
         LatLng wroclaw = new LatLng(51.107524, 17.038507);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(wroclaw, 11.0f));
-
     }
 
     @Override
@@ -315,7 +246,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             marker.hideInfoWindow();
         else
             marker.showInfoWindow();
-
         return false;
     }
 
@@ -325,28 +255,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             currentMarkers.get(i).setVisible(isVisible);
     }
 
+    private void toogleRoad(boolean isVisible)
+    {
+        for (int i = 0; i < currentRoad.size(); i++)
+            currentRoad.get(i).setVisible(isVisible);
+    }
+
     private void clearRoad()
     {
         for (Polyline poly:currentRoad)
-        {
             poly.remove();
-        }
         currentRoad.clear();
     }
 
     private void clearMarkers()
     {
         for (Marker marker:currentMarkers)
-        {
             marker.remove();
-        }
         currentRoad.clear();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
+        switch (item.getItemId())
+        {
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;

@@ -14,33 +14,45 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownloadTask extends AsyncTask<String,Void,Boolean>
+public class DownloadTask extends AsyncTask<Void,Void,Boolean>
 {
     private Response delegate;
     private List<String> response = null;
+    private String key;
+    private String url;
 
-    public DownloadTask (Response del)
+    public DownloadTask (Response del, String u, String k)
     {
         delegate = del;
+        url = u;
+        key = k;
     }
 
-    protected Boolean doInBackground(String... Params)
+    protected Boolean doInBackground(Void... Params)
     {
-        JSONArray steps;
+        JSONArray legs;
         response = new ArrayList<>();
-        int responseCode = 404;
+        int responseCode;
         try
         {
-            URL service = new URL(Params[0]);
+            URL service = new URL(url+key);
             HttpURLConnection connection=(HttpURLConnection) service.openConnection();
-            connection.setRequestMethod("GET");
+            connection.connect();
             BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
-            String json=reader.readLine();
+            StringBuffer sb = new StringBuffer();
+            String json="";
+            while( ( json = reader.readLine()) != null){
+                sb.append(json);
+            }
+            json = sb.toString();
+
             JSONObject jObject=new JSONObject(json);
             responseCode = connection.getResponseCode();
-            steps = jObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
-            Log.i("data", response.toString());
+            Log.i("data", jObject.toString());
             Log.i("conRes", String.valueOf(connection.getResponseCode()));
+            legs = jObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+
+
             connection.disconnect();
         }
         catch(Exception e)
@@ -49,11 +61,16 @@ public class DownloadTask extends AsyncTask<String,Void,Boolean>
             return false;
         }
 
-        for (int i=0; i<steps.length(); i++)
+        for (int i=0; i<legs.length(); i++)
         {
             try
             {
-                response.add(getPath(steps.getJSONObject(i)));
+                JSONArray step = legs.getJSONObject(i).getJSONArray("steps");
+                for (int j=0; j<step.length();  j++)
+                {
+                    response.add(getPath(step.getJSONObject(j)));
+                    //Log.i("obiekt " + j, getPath(legs.getJSONObject(j)));
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

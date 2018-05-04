@@ -42,6 +42,12 @@
             android:title="@string/znaczniki"
             app:actionLayout = "@layout/layout_switch_on"
             />
+        <item
+            android:id = "@+id/nav_road"
+            android:icon = "@drawable/ic_road"
+            android:title="@string/show_route"
+            app:actionLayout = "@layout/layout_switch_on"
+            />
     </group>
 
 </menu>
