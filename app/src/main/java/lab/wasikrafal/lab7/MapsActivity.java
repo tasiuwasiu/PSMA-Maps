@@ -27,6 +27,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -49,6 +50,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Polyline> currentRoad;
     private List<Marker> currentMarkers;
     private int[] urls;
+    private CustomInfoWindowAdapter windowAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,17 +76,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         initURLS();
         currentMarkers = new ArrayList<>();
         currentRoad = new ArrayList<>();
-
+        windowAdapter = new CustomInfoWindowAdapter(this);
         initNavigationMenu();
     }
 
     private void initURLS()
     {
-        urls= new int[4];
+        urls= new int[3];
         urls[0] = R.string.url_first;
         urls[1] = R.string.url_second;
         urls[2] = R.string.url_third;
-        urls[3] = R.string.url_fourth;
     }
 
     private void initNavigationMenu()
@@ -103,8 +104,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             showRoad(1);
                         if(id == R.id.nav_third_road)
                             showRoad(2);
-                        if(id == R.id.nav_fourth_road)
-                            showRoad(3);
 
                         drawerLayout.closeDrawers();
                         return true;
@@ -182,11 +181,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void initMarkers()
-    {
-
-    }
-
     private void load()
     {
         satelliteSwitch.setChecked(sharedPreferences.getBoolean("satellite", false));
@@ -227,7 +221,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void showMarkers(int number)
     {
+        switch (number)
+        {
+            case(0):
+            {
+                Marker zoo = map.addMarker(new MarkerOptions().position(new LatLng(51.103010,17.071997)));
+                zoo.setTag(new MarkerInfoHolder(R.string.zoo_title, R.string.zoo_desc, R.drawable.zoo));
+                currentMarkers.add(zoo);
+                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.135069,17.047607)).title("4").snippet("44")));
+                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.126064,16.990499)).title("2").snippet("22")));
+                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.109317,17.054497)).title("pwr").snippet("PWR")));
+                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.100528,17.120618)).title("3").snippet("33")));
 
+            }
+            case(1):
+            {
+
+            }
+            case(2):
+            {
+
+            }
+            default:
+            {
+            }
+        }
     }
 
     @Override
@@ -237,6 +255,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         load();
         LatLng wroclaw = new LatLng(51.107524, 17.038507);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(wroclaw, 11.0f));
+        map.setInfoWindowAdapter(windowAdapter);
     }
 
     @Override
@@ -270,8 +289,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void clearMarkers()
     {
-        for (Marker marker:currentMarkers)
+        for (Marker marker:currentMarkers) {
             marker.remove();
+        }
         currentRoad.clear();
     }
 

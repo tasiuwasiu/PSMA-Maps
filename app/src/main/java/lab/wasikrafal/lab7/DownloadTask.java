@@ -39,19 +39,17 @@ public class DownloadTask extends AsyncTask<Void,Void,Boolean>
             HttpURLConnection connection=(HttpURLConnection) service.openConnection();
             connection.connect();
             BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
-            StringBuffer sb = new StringBuffer();
-            String json="";
-            while( ( json = reader.readLine()) != null){
+            StringBuilder sb = new StringBuilder();
+            String json;
+            while( (json = reader.readLine()) != null )
+            {
                 sb.append(json);
             }
             json = sb.toString();
-
             JSONObject jObject=new JSONObject(json);
             responseCode = connection.getResponseCode();
-            Log.i("data", jObject.toString());
             Log.i("conRes", String.valueOf(connection.getResponseCode()));
             legs = jObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
-
 
             connection.disconnect();
         }
@@ -67,10 +65,7 @@ public class DownloadTask extends AsyncTask<Void,Void,Boolean>
             {
                 JSONArray step = legs.getJSONObject(i).getJSONArray("steps");
                 for (int j=0; j<step.length();  j++)
-                {
                     response.add(getPath(step.getJSONObject(j)));
-                    //Log.i("obiekt " + j, getPath(legs.getJSONObject(j)));
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -85,7 +80,8 @@ public class DownloadTask extends AsyncTask<Void,Void,Boolean>
         try
         {
             point =  step.getJSONObject("polyline").getString("points");
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return point;
