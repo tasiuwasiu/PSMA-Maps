@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Lab7</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Trasy Wrocław</string>
     <string name="widok_z_satelity">Widok z satelity</string>
     <string name="moja_pozycja">Moja pozycja</string>
     <string name="pierwsza_trasa">Pierwsza trasa</string>
@@ -10,7 +10,7 @@
     <string name="znaczniki">Pokaż znaczniki</string>
     <string name="url_first" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=51.109317,17.054497&amp;destination=51.126064,16.990499&amp;waypoints=51.103010,17.071997|51.100528,17.120618|51.135069,17.047607&amp;mode=bicycling&amp;key=</string>
     <string name="url_second" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=51.109317,17.054497&amp;destination=51.146114,17.112669&amp;waypoints=51.110320,17.078744|51.114429,17.109588&amp;mode=bicycling&amp;key=</string>
-    <string name="url_third" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=  &amp;destination=  &amp;waypoints=  &amp;mode=walking&amp;key=</string>
+    <string name="url_third" translatable="false">https://maps.googleapis.com/maps/api/directions/json?origin=51.111260,17.038284&amp;destination=51.111605,17.029791&amp;waypoints=51.108459,17.039163|51.109374,17.032008&amp;mode=walking&amp;key=</string>
     <string name="show_route">Pokaż trasę</string>
     <string name="night_mode">Tryb nocny</string>
     <string name="marker_icon">Wygląd znacznika</string>
@@ -21,9 +21,31 @@
     <string name="black">Czarny</string>
 
 
-    //Zoo Wrocław
     <string name="zoo_title">Zoo Wrocław</string>
-    <string name="zoo_desc">Piękne wrocławskie ZOO, w którym żyje wiele zwierząt</string>
+    <string name="zoo_desc">Piękne wrocławskie ZOO, w którym żyje wiele egzotycznych zwierząt</string>
+    <string name="jkPart_title">Park J. Kasprowicza</string>
+    <string name="jkPark_desc">Malowniczy park położony nad rzeką Odrą</string>
+    <string name="pwr_title">Politechnika Wrocławska</string>
+    <string name="pwr_desc"><![CDATA[Nasza ukochana uczelnia <3]]></string>
+    <string name="islandOpat_title">Wyspa Opatowicka</string>
+    <string name="islandOpat_desc">Miejsce w którym Odra rozdziela się na pół</string>
+    <string name="wroCenter_title">Geo. środek Wrocławia</string>
+    <string name="wroCenter_desc">Park, w którym znajduje się oficjalny geograficzny środek Wrocławia</string>
+    <string name="dogField_title">Rynek Psie Pole</string>
+    <string name="dogField_desc">Niewielki, lecz piękny ryneczek na przedmieściach Wrocławia</string>
+    <string name="japGarden_title">Ogród Japoński</string>
+    <string name="japGarden_desc"/>
+    <string name="bridge_title">Most</string>
+    <string name="bridge_desc">Most z widokiem na Kanał Żeglugowy oraz Kanał Powodziowy</string>
+    <string name="newTarg_title">Plac Nowy Targ</string>
+    <string name="townHall_title">Ratusz Wrocławski</string>
+    <string name="townHall_desc">Jeden z najlepiej zachowanych historycznych ratuszy w Polsce</string>
+    <string name="church_title">Bazylika św. Elżbiety</string>
+    <string name="church_desc">Gotycki kościół z wysoką wieżą, z możliwością wejścia na nią</string>
+    <string name="galDomin_title">Galeria Dominikańska</string>
+    <string name="galDomin_desc"/>
+    <string name="nowyTarg_desc"/>
+
 
 
 </resources>

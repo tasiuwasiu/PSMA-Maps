@@ -86,16 +86,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        initData();
-        currentMarkers = new ArrayList<>();
-        currentRoad = new ArrayList<>();
-        currentIcon = 0;
         windowAdapter = new CustomInfoWindowAdapter(this);
+        initData();
         initNavigationMenu();
     }
 
     private void initData()
     {
+        currentMarkers = new ArrayList<>();
+        currentRoad = new ArrayList<>();
+        currentIcon = 0;
+
         urls= new int[3];
         urls[0] = R.string.url_first;
         urls[1] = R.string.url_second;
@@ -276,19 +277,54 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Marker zoo = map.addMarker(new MarkerOptions().position(new LatLng(51.103010,17.071997)));
                 zoo.setTag(new MarkerInfoHolder(R.string.zoo_title, R.string.zoo_desc, R.drawable.zoo));
                 currentMarkers.add(zoo);
-                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.135069,17.047607)).title("4").snippet("44")));
-                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.126064,16.990499)).title("2").snippet("22")));
-                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.109317,17.054497)).title("pwr").snippet("PWR")));
-                currentMarkers.add(map.addMarker(new MarkerOptions().position(new LatLng(51.100528,17.120618)).title("3").snippet("33")));
-
+                Marker jkPark = map.addMarker(new MarkerOptions().position(new LatLng(51.135069,17.047607)));
+                jkPark.setTag(new MarkerInfoHolder(R.string.jkPart_title, R.string.jkPark_desc, R.drawable.jkpark));
+                currentMarkers.add(jkPark);
+                Marker wroCenter = map.addMarker(new MarkerOptions().position(new LatLng(51.126064,16.990499)));
+                wroCenter.setTag(new MarkerInfoHolder(R.string.wroCenter_title, R.string.wroCenter_desc, R.drawable.wrocenter));
+                currentMarkers.add(wroCenter);
+                Marker pwr = map.addMarker(new MarkerOptions().position(new LatLng(51.109317,17.054497)));
+                pwr.setTag(new MarkerInfoHolder(R.string.pwr_title,R.string.pwr_desc, R.drawable.pwr));
+                currentMarkers.add(pwr);
+                Marker islandOpat = map.addMarker(new MarkerOptions().position(new LatLng(51.100528,17.120618)));
+                islandOpat.setTag(new MarkerInfoHolder(R.string.islandOpat_title, R.string.islandOpat_desc, R.drawable.islandopat));
+                currentMarkers.add(islandOpat);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.109317,17.054497), 12.0f));
+                break;
             }
             case(1):
             {
-
+                Marker pwr = map.addMarker(new MarkerOptions().position(new LatLng(51.109317,17.054497)));
+                pwr.setTag(new MarkerInfoHolder(R.string.pwr_title,R.string.pwr_desc, R.drawable.pwr));
+                currentMarkers.add(pwr);
+                Marker japGarden = map.addMarker(new MarkerOptions().position(new LatLng(51.110320,17.078744)));
+                japGarden.setTag(new MarkerInfoHolder(R.string.japGarden_title,R.string.japGarden_desc, R.drawable.japgarden));
+                currentMarkers.add(japGarden);
+                Marker bridge = map.addMarker(new MarkerOptions().position(new LatLng(51.114429,17.109588)));
+                bridge.setTag(new MarkerInfoHolder(R.string.bridge_title,R.string.bridge_desc, R.drawable.bridge));
+                currentMarkers.add(bridge);
+                Marker dogField = map.addMarker(new MarkerOptions().position(new LatLng(51.146114,17.112669)));
+                dogField.setTag(new MarkerInfoHolder(R.string.dogField_title,R.string.dogField_desc, R.drawable.dogfield));
+                currentMarkers.add(dogField);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.109317,17.054497), 11.0f));
+                break;
             }
             case(2):
             {
-
+                Marker nowyTarg = map.addMarker(new MarkerOptions().position(new LatLng(51.111260,17.038284)));
+                nowyTarg.setTag(new MarkerInfoHolder(R.string.newTarg_title, R.string.nowyTarg_desc, R.drawable.nowytarg));
+                currentMarkers.add(nowyTarg);
+                Marker galDomin = map.addMarker(new MarkerOptions().position(new LatLng(51.108459,17.039163)));
+                galDomin.setTag(new MarkerInfoHolder(R.string.galDomin_title, R.string.galDomin_desc, R.drawable.galdomin));
+                currentMarkers.add(galDomin);
+                Marker townHall = map.addMarker(new MarkerOptions().position(new LatLng(51.109374,17.032008)));
+                townHall.setTag(new MarkerInfoHolder(R.string.townHall_title, R.string.townHall_desc, R.drawable.townhall));
+                currentMarkers.add(townHall);
+                Marker church = map.addMarker(new MarkerOptions().position(new LatLng(51.111605,17.029791)));
+                church.setTag(new MarkerInfoHolder(R.string.church_title, R.string.church_desc, R.drawable.church));
+                currentMarkers.add(church);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.111260,17.038284), 14.0f));
+                break;
             }
             default:
             {
@@ -408,7 +444,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (Marker marker:currentMarkers) {
             marker.remove();
         }
-        currentRoad.clear();
+        currentMarkers.clear();
     }
 
     @Override
