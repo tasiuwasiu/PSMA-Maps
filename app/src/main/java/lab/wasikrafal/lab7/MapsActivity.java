@@ -2,7 +2,9 @@ package lab.wasikrafal.lab7;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -19,13 +21,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -41,16 +46,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private DrawerLayout drawerLayout;
     private Activity mapsActivity;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor preferenceEditor;
+    private CustomInfoWindowAdapter windowAdapter;
+
     private SwitchCompat satelliteSwitch;
     private SwitchCompat positionSwitch;
     private SwitchCompat markerSwitch;
     private SwitchCompat roadSwitch;
+    private SwitchCompat nightSwitch;
+
     private List<Polyline> currentRoad;
     private List<Marker> currentMarkers;
+    private int currentIcon;
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor preferenceEditor;
+
     private int[] urls;
-    private CustomInfoWindowAdapter windowAdapter;
+    private List<Integer> markerIcons;
+    private List<String> markerIconsDesc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,19 +86,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        initURLS();
+        initData();
         currentMarkers = new ArrayList<>();
         currentRoad = new ArrayList<>();
+        currentIcon = 0;
         windowAdapter = new CustomInfoWindowAdapter(this);
         initNavigationMenu();
     }
 
-    private void initURLS()
+    private void initData()
     {
         urls= new int[3];
         urls[0] = R.string.url_first;
         urls[1] = R.string.url_second;
         urls[2] = R.string.url_third;
+
+        markerIcons = new ArrayList<>();
+        markerIcons.add(R.drawable.red_marker);
+        markerIcons.add(R.drawable.blue_marker);
+        markerIcons.add(R.drawable.green_marker);
+        markerIcons.add(R.drawable.black_marker);
+
+        markerIconsDesc = new ArrayList<>();
+        markerIconsDesc.add(getString(R.string.red));
+        markerIconsDesc.add(getString(R.string.blue));
+        markerIconsDesc.add(getString(R.string.green));
+        markerIconsDesc.add(getString(R.string.black));
     }
 
     private void initNavigationMenu()
@@ -104,6 +130,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             showRoad(1);
                         if(id == R.id.nav_third_road)
                             showRoad(2);
+                        if(id == R.id.nav_marker_icon)
+                            changeMarkerIcon();
 
                         drawerLayout.closeDrawers();
                         return true;
@@ -179,6 +207,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 preferenceEditor.apply();
             }
         });
+
+        MenuItem nightItem = navigationMenu.findItem(R.id.nav_night);
+        nightSwitch = (SwitchCompat) nightItem.getActionView().findViewById(R.id.nav_switch);
+        nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                setMapStyle(b);
+                preferenceEditor = sharedPreferences.edit();
+                preferenceEditor.putBoolean("night", b);
+                preferenceEditor.apply();
+            }
+        });
     }
 
     private void load()
@@ -187,6 +229,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         positionSwitch.setChecked(sharedPreferences.getBoolean("position", false));
         markerSwitch.setChecked(sharedPreferences.getBoolean("markers", true));
         roadSwitch.setChecked(sharedPreferences.getBoolean("road", true));
+        nightSwitch.setChecked(sharedPreferences.getBoolean("night", false));
+        showRoad(sharedPreferences.getInt("chosenRoad", 0));
+        setMarkerIcon(sharedPreferences.getInt("markerIcon", 4));
     }
 
     private void showRoad(final int number)
@@ -208,6 +253,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         polylineOptions.addAll(PolyUtil.decode(path));
                         currentRoad.add(map.addPolyline(polylineOptions));
                         showMarkers(number);
+                        preferenceEditor = sharedPreferences.edit();
+                        preferenceEditor.putInt("chosenRoad", number);
+                        preferenceEditor.apply();
                     }
                 }
                 else
@@ -246,6 +294,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             {
             }
         }
+        setMarkerIcon(currentIcon);
     }
 
     @Override
@@ -266,6 +315,73 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         else
             marker.showInfoWindow();
         return false;
+    }
+
+    private void changeMarkerIcon()
+    {
+        ListAdapter adapter = new CustomArrayAdapter(this, markerIconsDesc, markerIcons);
+
+        new AlertDialog.Builder(this).setTitle(getString(R.string.select_icon)).setAdapter(adapter, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                currentIcon = i;
+                setMarkerIcon(currentIcon);
+            }
+        }).show();
+    }
+
+    private void setMarkerIcon(int index)
+    {
+        switch (index)
+        {
+            case 0:
+            {
+                for (int i = 0; i < currentMarkers.size(); i++)
+                    currentMarkers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.red_marker));
+                break;
+            }
+            case 1:
+            {
+                Log.d("in", "item 2");
+                for (int i = 0; i < currentMarkers.size(); i++)
+                    currentMarkers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.blue_marker));
+                break;
+            }
+            case 2:
+            {
+                for (int i = 0; i < currentMarkers.size(); i++)
+                    currentMarkers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.green_marker));
+                break;
+            }
+            case 3:
+            {
+                for (int i = 0; i < currentMarkers.size(); i++)
+                    currentMarkers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.black_marker));
+                break;
+            }
+            default:
+            {
+                for (int i = 0; i < currentMarkers.size(); i++)
+                    currentMarkers.get(i).setIcon(BitmapDescriptorFactory.defaultMarker());
+            }
+        }
+        preferenceEditor = sharedPreferences.edit();
+        preferenceEditor.putInt("markerIcon", index);
+        preferenceEditor.apply();
+    }
+
+    private void setMapStyle( boolean isNightMode)
+    {
+        if (isNightMode)
+        {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.night_style));
+        }
+        else
+        {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.day_style));
+        }
     }
 
     private void toogleMarkers(boolean isVisible)

@@ -52,47 +52,11 @@
             app:actionLayout="@layout/layout_switch"
             />
         <item
-            android:id="@+id/nav_road7"
+            android:id="@+id/nav_marker_icon"
             android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
+            android:title="@string/marker_icon"
             />
-        <item
-            android:id="@+id/nav_road6"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
-        <item
-            android:id="@+id/nav_road5"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
-        <item
-            android:id="@+id/nav_road4"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
-        <item
-            android:id="@+id/nav_road3"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
-        <item
-            android:id="@+id/nav_road2"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
-        <item
-            android:id="@+id/nav_road1"
-            android:icon="@drawable/ic_road"
-            android:title="@string/show_route"
-            app:actionLayout="@layout/layout_switch_on"
-            />
+
     </group>
 
 </menu>
