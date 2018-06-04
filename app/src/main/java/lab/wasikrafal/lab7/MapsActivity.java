@@ -231,12 +231,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerSwitch.setChecked(sharedPreferences.getBoolean("markers", true));
         roadSwitch.setChecked(sharedPreferences.getBoolean("road", true));
         nightSwitch.setChecked(sharedPreferences.getBoolean("night", false));
-        showRoad(sharedPreferences.getInt("chosenRoad", 0));
+        showRoad(sharedPreferences.getInt("chosenRoad", 4));
         setMarkerIcon(sharedPreferences.getInt("markerIcon", 4));
     }
 
     private void showRoad(final int number)
     {
+        if (number==4)
+        {
+            return;
+        }
         clearRoad();
         clearMarkers();
         DownloadTask downloader = new DownloadTask(new Response()
